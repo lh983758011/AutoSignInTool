@@ -1,0 +1,12 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="week_entries">
+        <item>周一-周五</item>
+        <item>每天</item>
+    </string-array>
+
+    <string-array name="week_values">
+        <item>workdays</item>
+        <item>everyday</item>
+    </string-array>
+</resources>
