@@ -54,21 +54,29 @@ public class SettingsActivity extends AppCompatActivity {
     private void checkAccessibilityOn(){
         if (!isAccessibilitySettingsOn(this,
                 AutoSigninService.class.getName())) {// 判断服务是否开启
-            Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            openAccessibilitySettings();
         } else {
             Utils.toast(this, "服务已开启");
-            // 打开飞书应用
-            Intent intent1 = new Intent("android.intent.action.MAIN");
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
-            intent1.setComponent(componentName);
-            startActivity(intent1);
         }
     }
 
-    //判断自定义辅助功能服务是否开启
+    // 打开飞书
+    private void startLarkApp(){
+        Intent intent1 = new Intent("android.intent.action.MAIN");
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
+        intent1.setComponent(componentName);
+        startActivity(intent1);
+    }
+
+    // 打开无障碍设置
+    private void openAccessibilitySettings(){
+        Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    // 判断自定义辅助功能服务是否开启
     private boolean isAccessibilitySettingsOn(Context context, String className) {
         if (context == null) {
             return false;
@@ -93,6 +101,17 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
+
+        SwitchPreferenceCompat mSwitchPreference = null;
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            if (mSwitchPreference != null){
+                mSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isOpen());
+            }
+        }
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -108,30 +127,29 @@ public class SettingsActivity extends AppCompatActivity {
             Preference startPre = findPreference("start");
             startPre.setOnPreferenceClickListener(preference -> {
                 // 前往开启辅助服务界面
-                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getActivity().startActivity(intent);
+                ((SettingsActivity)getActivity()).openAccessibilitySettings();
                 return false;
             });
 
             Preference launchPre = findPreference("launch");
             launchPre.setOnPreferenceClickListener(preference -> {
                 // 打开飞书应用
-                Intent intent1 = new Intent("android.intent.action.MAIN");
-                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
-                intent1.setComponent(componentName);
-                startActivity(intent1);
+                ((SettingsActivity)getActivity()).startLarkApp();
                 return false;
             });
 
             ListPreference listPreference = findPreference("choose_date");
-            SwitchPreferenceCompat switchPreference = findPreference("switch");
+            mSwitchPreference = findPreference("switch");
 
 
-            switchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            mSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 boolean switchState = (boolean) newValue;
-
+                if (switchState){
+                    ((MyApplication)getActivity().getApplication()).setOpen(true);
+                    ((SettingsActivity)getActivity()).startLarkApp();
+                }else{
+                    ((MyApplication)getActivity().getApplication()).setOpen(false);
+                }
 
                 return true;
             });

@@ -13,11 +13,12 @@ import java.util.List;
 
 public class AutoSigninService extends AccessibilityService {
 
-    private boolean isEnterSignIn = false;
-    private boolean isSignInSuccessfully = false;
-    private boolean isCouldSignIn = false;
-
     private AutoSigninService mService = null;
+    private boolean isSigning = false; // 正在打卡状态
+    // 是否进入打卡界面
+    private boolean isEnterSignInScreen = false;
+    // 是否进入打卡范围
+    private boolean isEnterSignInRange = false;
 
     @Override
     protected void onServiceConnected() {
@@ -49,12 +50,14 @@ public class AutoSigninService extends AccessibilityService {
     }
 
     private void DFS(AccessibilityNodeInfo rootInfo) {
-        if (isSignInSuccessfully)
+        if (!((MyApplication)getApplication()).isOpen())
+            return;
+        if (isSigning)
             return;
         if (rootInfo == null || TextUtils.isEmpty(rootInfo.getClassName())) {
             return;
         }
-        if (!isEnterSignIn) {
+        if (!isEnterSignInScreen) {
             if (!"android.widget.TextView".equals(rootInfo.getClassName())) {
                 Log.e(SettingsActivity.TAG, rootInfo.getClassName().toString());
                 for (int i = 0; i < rootInfo.getChildCount(); i++) {
@@ -69,7 +72,7 @@ public class AutoSigninService extends AccessibilityService {
                         performClick(rootInfo.getParent());
                     } else if (text.equals("集团工作平台")) {
                         performClick(rootInfo.getParent());
-                        isEnterSignIn = true;
+                        isEnterSignInScreen = true;
                     }
                 }
             }
@@ -84,9 +87,9 @@ public class AutoSigninService extends AccessibilityService {
                     String text = rootInfo.getText().toString();
                     if (text.equals("已进入打卡范围重新定位")) {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
-                        isCouldSignIn = true;
+                        isEnterSignInRange = true;
                     }
-                    if (text.equals("打卡") && isCouldSignIn) {
+                    if (text.equals("打卡") && isEnterSignInRange) {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
                         Path path = new Path();
                         path.moveTo(300, 957);
@@ -97,13 +100,13 @@ public class AutoSigninService extends AccessibilityService {
                                 super.onCompleted(gestureDescription);
                                 Log.e(SettingsActivity.TAG, "打卡成功");
                                 Utils.toast(getApplicationContext(), "打卡成功");
-                                isEnterSignIn = false;
-                                isCouldSignIn = false;
-                                isSignInSuccessfully = false;
+                                isEnterSignInScreen = false;
+                                isEnterSignInRange = false;
+                                isSigning = false;
                                 mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
                             }
                         }, null);
-                        isSignInSuccessfully = true;
+                        isSigning = true;
                     }
 
                 }
