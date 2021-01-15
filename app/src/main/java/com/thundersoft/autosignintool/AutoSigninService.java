@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.content.Context;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -95,7 +96,9 @@ public class AutoSigninService extends AccessibilityService {
                     if (text.equals("打卡") && isEnterSignInRange) {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
                         Path path = new Path();
-                        path.moveTo(300, 957);
+                        Rect boundsInScreen = new Rect();
+                        rootInfo.getBoundsInScreen(boundsInScreen);
+                        path.moveTo(boundsInScreen.left, boundsInScreen.top);
                         final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 2000, 50);
                         dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback(){
                             @Override
@@ -103,7 +106,7 @@ public class AutoSigninService extends AccessibilityService {
                                 super.onCompleted(gestureDescription);
                                 Log.e(SettingsActivity.TAG, "打卡成功");
                                 Vibrator mVibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                mVibrator.vibrate(VibrationEffect.createWaveform(new long[] { 800, 800, 800 }, 2));
+                                mVibrator.vibrate(VibrationEffect.createWaveform(new long[] { 100, 500, 100, 500 }, -1));
                                 Utils.toast(getApplicationContext(), "打卡成功");
                                 isEnterSignInScreen = false;
                                 isEnterSignInRange = false;
