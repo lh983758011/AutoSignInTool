@@ -2,8 +2,11 @@ package com.thundersoft.autosignintool;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
+import android.content.Context;
 import android.graphics.Path;
 import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -93,12 +96,14 @@ public class AutoSigninService extends AccessibilityService {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
                         Path path = new Path();
                         path.moveTo(300, 957);
-                        final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 3000, 50);
+                        final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 2000, 50);
                         dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback(){
                             @Override
                             public void onCompleted(GestureDescription gestureDescription) {
                                 super.onCompleted(gestureDescription);
                                 Log.e(SettingsActivity.TAG, "打卡成功");
+                                Vibrator mVibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                mVibrator.vibrate(VibrationEffect.createWaveform(new long[] { 800, 800, 800 }, 2));
                                 Utils.toast(getApplicationContext(), "打卡成功");
                                 isEnterSignInScreen = false;
                                 isEnterSignInRange = false;
@@ -144,7 +149,7 @@ public class AutoSigninService extends AccessibilityService {
     private void performClick(AccessibilityNodeInfo targetInfo) {
         targetInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
         try {
-            Thread.sleep(2 * 1000);
+            Thread.sleep(1 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

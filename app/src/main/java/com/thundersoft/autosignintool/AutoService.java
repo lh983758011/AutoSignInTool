@@ -12,7 +12,7 @@ import android.util.Log;
 import java.io.OutputStream;
 import java.util.List;
 
-public class AutoSignInService extends Service {
+public class AutoService extends Service {
 
     private boolean start = true;
     private OutputStream os;
@@ -21,7 +21,7 @@ public class AutoSignInService extends Service {
 
     private static String PACKAGE_NAME = "com.ss.android.lark";
 
-    public AutoSignInService() {
+    public AutoService() {
     }
 
     @Override
