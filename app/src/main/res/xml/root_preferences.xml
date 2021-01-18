@@ -3,6 +3,16 @@
     <PreferenceCategory app:title="@string/messages_header">
 
         <Preference
+            app:key="state"
+            app:title="状态"
+            />
+
+        <Preference
+            app:key="reset"
+            app:title="重置"
+            />
+
+        <Preference
             app:key="location"
             app:title="定位"
             />
@@ -24,7 +34,7 @@
             app:summaryOn="@string/switch_summary_on"/>
 
         <ListPreference
-            app:defaultValue="workdays"
+            app:defaultValue="everyday"
             app:entries="@array/week_entries"
             app:entryValues="@array/week_values"
             app:key="choose_date"

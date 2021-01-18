@@ -1,15 +1,19 @@
 package com.thundersoft.autosignintool;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.List;
 
 public class AutoService extends Service {
@@ -26,14 +30,34 @@ public class AutoService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Intent intent1 = new Intent("android.intent.action.MAIN");
-        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
-        intent1.setComponent(componentName);
-        startActivity(intent1);
 
-        autoClick();
+        Calendar now = Calendar.getInstance();
+        Calendar targetTime = (Calendar) now.clone();
+        targetTime.set(Calendar.HOUR_OF_DAY, 9);
+        targetTime.set(Calendar.MINUTE, 20);
+        targetTime.set(Calendar.SECOND, 0);
+        targetTime.set(Calendar.MILLISECOND, 0);
+        targetTime.set(Calendar.DAY_OF_WEEK, 1);
+        targetTime.set(Calendar.DAY_OF_WEEK, 2);
+        targetTime.set(Calendar.DAY_OF_WEEK, 3);
+        targetTime.set(Calendar.DAY_OF_WEEK, 4);
+        targetTime.set(Calendar.DAY_OF_WEEK, 5);
+
+        setAlarm(getApplicationContext(), targetTime);
+
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void setAlarm(Context context, Calendar targetTime) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
+        intent.setComponent(componentName);
+        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.currentThreadTimeMillis(), 20 * 1000, pi);
     }
 
     @Override
@@ -47,9 +71,9 @@ public class AutoService extends Service {
             @Override
             public void run() {
                 //while (start) {
-                    if (isCurrentAppIsTarget()) {
-                        exec(ADB_SHELL);
-                    }
+                if (isCurrentAppIsTarget()) {
+                    exec(ADB_SHELL);
+                }
 //					 1.利用ProcessBuilder执行shell命令，不能后台
 //					int x = 0, y = 0;
 //					String[] order = { "input", "tap", " ", x + "", y + "" };
@@ -60,7 +84,7 @@ public class AutoService extends Service {
 //						e.printStackTrace();
 //					}
 
-                    // 2.可以不用在 Activity 中增加任何处理，各 Activity 都可以响应，不能后台
+                // 2.可以不用在 Activity 中增加任何处理，各 Activity 都可以响应，不能后台
 //					try {
 //						Instrumentation inst = new Instrumentation();
 //						inst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0));
@@ -69,11 +93,11 @@ public class AutoService extends Service {
 //					} catch (Exception e) {
 //						Log.e("Exception when sendPointerSync", e.toString());
 //					}
-                    try {
-                        Thread.sleep(1 * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(1 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 //}
             }
         }).start();

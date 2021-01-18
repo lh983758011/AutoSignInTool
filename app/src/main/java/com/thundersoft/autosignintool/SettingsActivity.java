@@ -105,6 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
         SwitchPreferenceCompat mSwitchPreference = null;
+        Preference mStatePreference = null;
 
         @Override
         public void onResume() {
@@ -112,17 +113,30 @@ public class SettingsActivity extends AppCompatActivity {
             if (mSwitchPreference != null){
                 mSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isOpen());
             }
+            if (mStatePreference != null){
+                mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
+                + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
+            }
         }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
+            mStatePreference = findPreference("state");
+
             Preference locationPreference = findPreference("location");
             locationPreference.setOnPreferenceClickListener(preference -> {
                 String locationStr = Utils.getCurrentLocationStr(getContext());
                 Log.e(TAG, "location:" + locationStr);
                 preference.setSummary(locationStr);
+                return false;
+            });
+
+            Preference resetPreference = findPreference("reset");
+            resetPreference.setOnPreferenceClickListener(preference -> {
+                ((MyApplication)getActivity().getApplication()).setEnterSignInRange(false);
+                ((MyApplication)getActivity().getApplication()).setEnterSignInScreen(false);
                 return false;
             });
 
@@ -161,7 +175,13 @@ public class SettingsActivity extends AppCompatActivity {
                     ListPreference listPreference1 = (ListPreference) preference;
                     CharSequence[] entries = listPreference1.getEntries();
                     int index = listPreference1.findIndexOfValue((String) newValue);
-                    //listPreference1.setSummary(entries[index]);
+                    if(index == 0){
+                        // 打开定时
+                        getActivity().startService(new Intent(getActivity(), AutoService.class));
+                    }else if (index == 1){
+                        // 关闭定时
+                        getActivity().stopService(new Intent(getActivity(), AutoService.class));
+                    }
                 }
                 return true;
             });

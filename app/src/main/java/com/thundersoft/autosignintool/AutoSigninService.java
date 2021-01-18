@@ -19,10 +19,6 @@ public class AutoSigninService extends AccessibilityService {
 
     private AutoSigninService mService = null;
     private boolean isSigning = false; // 正在打卡状态
-    // 是否进入打卡界面
-    private boolean isEnterSignInScreen = false;
-    // 是否进入打卡范围
-    private boolean isEnterSignInRange = false;
 
     @Override
     protected void onServiceConnected() {
@@ -40,6 +36,7 @@ public class AutoSigninService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
         try {
+            Log.e(SettingsActivity.TAG, "onAccessibilityEvent");
             //拿到根节点
             AccessibilityNodeInfo rootInfo = getRootInActiveWindow();
             if (rootInfo == null)
@@ -61,7 +58,7 @@ public class AutoSigninService extends AccessibilityService {
         if (rootInfo == null || TextUtils.isEmpty(rootInfo.getClassName())) {
             return;
         }
-        if (!isEnterSignInScreen) {
+        if (!((MyApplication)getApplication()).isEnterSignInScreen()) {
             if (!"android.widget.TextView".equals(rootInfo.getClassName())) {
                 Log.e(SettingsActivity.TAG, rootInfo.getClassName().toString());
                 for (int i = 0; i < rootInfo.getChildCount(); i++) {
@@ -76,7 +73,8 @@ public class AutoSigninService extends AccessibilityService {
                         performClick(rootInfo.getParent());
                     } else if (text.equals("集团工作平台")) {
                         performClick(rootInfo.getParent());
-                        isEnterSignInScreen = true;
+                        //isEnterSignInScreen = true;
+                        ((MyApplication)getApplication()).setEnterSignInScreen(true);
                     }
                 }
             }
@@ -87,13 +85,15 @@ public class AutoSigninService extends AccessibilityService {
                     DFS(rootInfo.getChild(i));
                 }
             } else {
+                Log.e(SettingsActivity.TAG, "==find View==");
                 if (rootInfo != null && !TextUtils.isEmpty(rootInfo.getText())) {
                     String text = rootInfo.getText().toString();
                     if (text.equals("已进入打卡范围重新定位")) {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
-                        isEnterSignInRange = true;
+                        //isEnterSignInRange = true;
+                        ((MyApplication)getApplication()).setEnterSignInRange(true);
                     }
-                    if (text.equals("打卡") && isEnterSignInRange) {
+                    if (text.equals("打卡") && ((MyApplication)getApplication()).isEnterSignInRange()) {
                         Log.e(SettingsActivity.TAG, "==text ==" + text);
                         Path path = new Path();
                         Rect boundsInScreen = new Rect();
@@ -108,8 +108,10 @@ public class AutoSigninService extends AccessibilityService {
                                 Vibrator mVibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                 mVibrator.vibrate(VibrationEffect.createWaveform(new long[] { 100, 500, 100, 500 }, -1));
                                 Utils.toast(getApplicationContext(), "打卡成功");
-                                isEnterSignInScreen = false;
-                                isEnterSignInRange = false;
+//                                isEnterSignInScreen = false;
+//                                isEnterSignInRange = false;
+                                ((MyApplication)getApplication()).setEnterSignInScreen(false);
+                                ((MyApplication)getApplication()).setEnterSignInRange(false);
                                 isSigning = false;
                                 mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
                             }
