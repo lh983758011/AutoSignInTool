@@ -107,6 +107,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         SwitchPreferenceCompat mSwitchPreference = null;
         Preference mStatePreference = null;
+        Preference mDistancePreference = null;
+
 
         @Override
         public void onStart() {
@@ -117,6 +119,9 @@ public class SettingsActivity extends AppCompatActivity {
             if (mStatePreference != null){
                 mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
                         + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
+            }
+            if (mDistancePreference != null){
+                mDistancePreference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
             }
         }
 
@@ -137,8 +142,8 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
             // 距离
-            Preference distancePreference = findPreference("distance");
-            distancePreference.setOnPreferenceClickListener(preference -> {
+            mDistancePreference = findPreference("distance");
+            mDistancePreference.setOnPreferenceClickListener(preference -> {
                 Location location = Utils.getCurrentLocation(getContext());
                 if (location != null)
                     preference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
