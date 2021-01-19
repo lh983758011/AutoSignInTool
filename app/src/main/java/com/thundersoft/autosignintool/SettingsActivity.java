@@ -121,7 +121,11 @@ public class SettingsActivity extends AppCompatActivity {
                         + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
             }
             if (mDistancePreference != null){
-                mDistancePreference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
+                Location location = Utils.getCurrentLocation(getContext());
+                if (location != null)
+                    mDistancePreference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
+                else
+                    mDistancePreference.setSummary("定位失败");
             }
         }
 
