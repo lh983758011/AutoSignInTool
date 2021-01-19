@@ -21,6 +21,8 @@ public class AutoService extends Service {
     private boolean start = true;
     private OutputStream os;
 
+    private AlarmManager mAlarmManager = null;
+
     private static String ADB_SHELL = "input tap 550 2150 \n";
 
     private static String PACKAGE_NAME = "com.ss.android.lark";
@@ -31,38 +33,45 @@ public class AutoService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Calendar now = Calendar.getInstance();
-        Calendar targetTime = (Calendar) now.clone();
-        targetTime.set(Calendar.HOUR_OF_DAY, 9);
-        targetTime.set(Calendar.MINUTE, 20);
-        targetTime.set(Calendar.SECOND, 0);
-        targetTime.set(Calendar.MILLISECOND, 0);
-        targetTime.set(Calendar.DAY_OF_WEEK, 1);
-        targetTime.set(Calendar.DAY_OF_WEEK, 2);
-        targetTime.set(Calendar.DAY_OF_WEEK, 3);
-        targetTime.set(Calendar.DAY_OF_WEEK, 4);
-        targetTime.set(Calendar.DAY_OF_WEEK, 5);
+        int[] days = new int[]{
+                Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY
+        };
 
-        setAlarm(getApplicationContext(), targetTime);
-
-
+        for (int i : days) {
+            Calendar targetTime = Calendar.getInstance();
+            targetTime.set(Calendar.DAY_OF_WEEK, i);
+            targetTime.set(Calendar.HOUR_OF_DAY, 9);
+            targetTime.set(Calendar.MINUTE, 20);
+            targetTime.set(Calendar.SECOND, 0);
+            targetTime.set(Calendar.MILLISECOND, 0);
+            setAlarm(getApplicationContext(), targetTime);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
     private void setAlarm(Context context, Calendar targetTime) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent("android.intent.action.MAIN");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
         intent.setComponent(componentName);
         PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pi);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.currentThreadTimeMillis(), 20 * 1000, pi);
+        // mAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mPi);
+        // mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.currentThreadTimeMillis() + 20 * 1000, 20 * 1000, mPi);
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), pi);
     }
 
     @Override
     public void onDestroy() {
         start = false;
+        if (mAlarmManager != null) {
+            Intent intent = new Intent("android.intent.action.MAIN");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
+            intent.setComponent(componentName);
+            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+            mAlarmManager.cancel(pi);
+        }
         super.onDestroy();
     }
 

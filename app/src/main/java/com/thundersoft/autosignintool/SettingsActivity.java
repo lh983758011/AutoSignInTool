@@ -108,14 +108,14 @@ public class SettingsActivity extends AppCompatActivity {
         Preference mStatePreference = null;
 
         @Override
-        public void onResume() {
-            super.onResume();
+        public void onStart() {
+            super.onStart();
             if (mSwitchPreference != null){
                 mSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isOpen());
             }
             if (mStatePreference != null){
                 mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
-                + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
+                        + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
             }
         }
 
@@ -177,6 +177,7 @@ public class SettingsActivity extends AppCompatActivity {
                     int index = listPreference1.findIndexOfValue((String) newValue);
                     if(index == 0){
                         // 打开定时
+                        Log.e(SettingsActivity.TAG, "打开定时");
                         getActivity().startService(new Intent(getActivity(), AutoService.class));
                     }else if (index == 1){
                         // 关闭定时
