@@ -51,13 +51,14 @@ public class AutoService extends Service {
 
     private void setAlarm(Context context, Calendar targetTime) {
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent("android.intent.action.MAIN");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
-        intent.setComponent(componentName);
-        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+//        Intent intent = new Intent("android.intent.action.MAIN");
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
+//        intent.setComponent(componentName);
+//        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
         // mAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mPi);
         // mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.currentThreadTimeMillis() + 20 * 1000, 20 * 1000, mPi);
+        PendingIntent pi = PendingIntent.getService(context, 0, new Intent(context, AlarmIntentService.class), 0);
         mAlarmManager.set(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), pi);
     }
 
@@ -65,11 +66,12 @@ public class AutoService extends Service {
     public void onDestroy() {
         start = false;
         if (mAlarmManager != null) {
-            Intent intent = new Intent("android.intent.action.MAIN");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
-            intent.setComponent(componentName);
-            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+//            Intent intent = new Intent("android.intent.action.MAIN");
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
+//            intent.setComponent(componentName);
+//            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+            PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, new Intent(getApplicationContext(), AlarmIntentService.class), 0);
             mAlarmManager.cancel(pi);
         }
         super.onDestroy();

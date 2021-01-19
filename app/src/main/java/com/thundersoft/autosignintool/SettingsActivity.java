@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -123,8 +124,10 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
+            // 状态
             mStatePreference = findPreference("state");
 
+            // 定位
             Preference locationPreference = findPreference("location");
             locationPreference.setOnPreferenceClickListener(preference -> {
                 String locationStr = Utils.getCurrentLocationStr(getContext());
@@ -133,13 +136,25 @@ public class SettingsActivity extends AppCompatActivity {
                 return false;
             });
 
-            Preference resetPreference = findPreference("reset");
-            resetPreference.setOnPreferenceClickListener(preference -> {
-                ((MyApplication)getActivity().getApplication()).setEnterSignInRange(false);
-                ((MyApplication)getActivity().getApplication()).setEnterSignInScreen(false);
+            // 距离
+            Preference distancePreference = findPreference("distance");
+            distancePreference.setOnPreferenceClickListener(preference -> {
+                Location location = Utils.getCurrentLocation(getContext());
+                if (location != null)
+                    preference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
+                else
+                    preference.setSummary("定位失败");
                 return false;
             });
 
+            // 重置
+            Preference resetPreference = findPreference("reset");
+            resetPreference.setOnPreferenceClickListener(preference -> {
+                reset();
+                return false;
+            });
+
+            // 打开无障碍设置
             Preference startPre = findPreference("start");
             startPre.setOnPreferenceClickListener(preference -> {
                 // 前往开启辅助服务界面
@@ -147,6 +162,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return false;
             });
 
+            // 打开飞书
             Preference launchPre = findPreference("launch");
             launchPre.setOnPreferenceClickListener(preference -> {
                 // 打开飞书应用
@@ -154,10 +170,9 @@ public class SettingsActivity extends AppCompatActivity {
                 return false;
             });
 
-            ListPreference listPreference = findPreference("choose_date");
+
+            // 开关
             mSwitchPreference = findPreference("switch");
-
-
             mSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
@@ -170,6 +185,8 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
 
+            // 选择定时
+            ListPreference listPreference = findPreference("choose_date");
             listPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (preference instanceof ListPreference) {
                     ListPreference listPreference1 = (ListPreference) preference;
@@ -186,6 +203,12 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 return true;
             });
+        }
+
+        private void reset() {
+            ((MyApplication)getActivity().getApplication()).setEnterSignInRange(false);
+            ((MyApplication)getActivity().getApplication()).setEnterSignInScreen(false);
+            ((MyApplication)getActivity().getApplication()).setSigning(false);
         }
     }
 

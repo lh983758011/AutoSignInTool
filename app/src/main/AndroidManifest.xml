@@ -5,22 +5,35 @@
 
     <!-- 定位权限 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 震动 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 震动 -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".MyApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoSignInTool">
         <service
+            android:name=".AlarmIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.thundersoft.autosignintool.action.start"/>
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".AlarmReceiver">
+            <intent-filter>
+                <action android:name="com.thundersoft.autosignintool.alarmbroadcast" />
+            </intent-filter>
+        </receiver>
+
+        <service
             android:name=".AutoService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".AutoSigninService"
             android:enabled="true"

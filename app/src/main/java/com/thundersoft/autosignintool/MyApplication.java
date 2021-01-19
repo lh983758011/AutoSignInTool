@@ -20,6 +20,17 @@ public class MyApplication extends Application {
     // 是否进入打卡范围
     private boolean isEnterSignInRange = false;
 
+    public boolean isSigning() {
+        return isSigning;
+    }
+
+    public void setSigning(boolean signing) {
+        isSigning = signing;
+    }
+
+    // 正在打卡状态
+    private boolean isSigning = false;
+
     public boolean isEnterSignInScreen() {
         return isEnterSignInScreen;
     }
@@ -50,5 +61,6 @@ public class MyApplication extends Application {
         isOpen = false;
         isEnterSignInRange = false;
         isEnterSignInScreen = false;
+        isSigning = false;
     }
 }
