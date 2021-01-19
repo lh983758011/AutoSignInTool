@@ -18,7 +18,6 @@ import java.util.List;
 public class AutoSigninService extends AccessibilityService {
 
     private AutoSigninService mService = null;
-    private boolean isSigning = false; // 正在打卡状态
 
     @Override
     protected void onServiceConnected() {
@@ -53,7 +52,7 @@ public class AutoSigninService extends AccessibilityService {
     private void DFS(AccessibilityNodeInfo rootInfo) {
         if (!((MyApplication)getApplication()).isOpen())
             return;
-        if (isSigning)
+        if (((MyApplication)getApplication()).isSigning())
             return;
         if (rootInfo == null || TextUtils.isEmpty(rootInfo.getClassName())) {
             return;
@@ -112,11 +111,11 @@ public class AutoSigninService extends AccessibilityService {
 //                                isEnterSignInRange = false;
                                 ((MyApplication)getApplication()).setEnterSignInScreen(false);
                                 ((MyApplication)getApplication()).setEnterSignInRange(false);
-                                isSigning = false;
+                                ((MyApplication)getApplication()).setSigning(false);
                                 mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
                             }
                         }, null);
-                        isSigning = true;
+                        ((MyApplication)getApplication()).setSigning(true);
                     }
 
                 }

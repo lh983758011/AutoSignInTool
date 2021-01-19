@@ -18,6 +18,11 @@
             />
 
         <Preference
+            app:key="distance"
+            app:title="距离"
+            />
+
+        <Preference
             app:key="start"
             app:title="打开无障碍设置"
             />
