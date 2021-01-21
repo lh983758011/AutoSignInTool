@@ -23,6 +23,10 @@ public class AutoService extends Service {
 
     private AlarmManager mAlarmManager = null;
 
+    private static final int[] days = new int[]{
+            Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY
+    };
+
     private static String ADB_SHELL = "input tap 550 2150 \n";
 
     private static String PACKAGE_NAME = "com.ss.android.lark";
@@ -32,11 +36,6 @@ public class AutoService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        int[] days = new int[]{
-                Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY
-        };
-
         for (int i : days) {
             Calendar targetTime = Calendar.getInstance();
             targetTime.set(Calendar.DAY_OF_WEEK, i);
@@ -44,12 +43,12 @@ public class AutoService extends Service {
             targetTime.set(Calendar.MINUTE, 20);
             targetTime.set(Calendar.SECOND, 0);
             targetTime.set(Calendar.MILLISECOND, 0);
-            setAlarm(getApplicationContext(), targetTime);
+            setAlarm(getApplicationContext(), i,targetTime);
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void setAlarm(Context context, Calendar targetTime) {
+    private void setAlarm(Context context, int requestCode, Calendar targetTime) {
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 //        Intent intent = new Intent("android.intent.action.MAIN");
 //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -58,7 +57,9 @@ public class AutoService extends Service {
 //        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
         // mAlarmManager.setRepeating(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, mPi);
         // mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.currentThreadTimeMillis() + 20 * 1000, 20 * 1000, mPi);
-        PendingIntent pi = PendingIntent.getService(context, 0, new Intent(context, AlarmIntentService.class), 0);
+        Intent intent = new Intent(context, AlarmIntentService.class);
+        intent.setAction(AlarmIntentService.ACTION_START);
+        PendingIntent pi = PendingIntent.getService(context, requestCode, intent, 0);
         mAlarmManager.set(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), pi);
     }
 
@@ -71,8 +72,12 @@ public class AutoService extends Service {
 //            ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
 //            intent.setComponent(componentName);
 //            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-            PendingIntent pi = PendingIntent.getService(getApplicationContext(), 0, new Intent(getApplicationContext(), AlarmIntentService.class), 0);
-            mAlarmManager.cancel(pi);
+            for (int i : days) {
+                Intent intent = new Intent(getApplicationContext(), AlarmIntentService.class);
+                intent.setAction(AlarmIntentService.ACTION_START);
+                PendingIntent pi = PendingIntent.getService(getApplicationContext(), i, intent, 0);
+                mAlarmManager.cancel(pi);
+            }
         }
         super.onDestroy();
     }

@@ -32,6 +32,11 @@
             app:title="打开飞书"
             />
 
+        <Preference
+            app:key="play"
+            app:title="播放铃声"
+            />
+
         <SwitchPreferenceCompat
             app:key="switch"
             app:title="@string/switch_title"

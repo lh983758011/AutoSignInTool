@@ -212,6 +212,17 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 return true;
             });
+
+            // 播放铃声
+            Preference playPreference = findPreference("play");
+            playPreference.setOnPreferenceClickListener(preference -> {
+                try {
+                    Utils.playRing(getContext());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            });
         }
 
         private void reset() {

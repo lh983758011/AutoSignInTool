@@ -104,6 +104,11 @@ public class AutoSigninService extends AccessibilityService {
                             public void onCompleted(GestureDescription gestureDescription) {
                                 super.onCompleted(gestureDescription);
                                 Log.e(SettingsActivity.TAG, "打卡成功");
+                                try {
+                                    Utils.playRing(getApplicationContext());
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                                 Vibrator mVibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
                                 mVibrator.vibrate(VibrationEffect.createWaveform(new long[] { 100, 500, 100, 500 }, -1));
                                 Utils.toast(getApplicationContext(), "打卡成功");

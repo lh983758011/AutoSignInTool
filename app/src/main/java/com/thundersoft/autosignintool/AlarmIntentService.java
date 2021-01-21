@@ -9,7 +9,7 @@ import androidx.core.app.JobIntentService;
 
 public class AlarmIntentService extends JobIntentService {
 
-    private static final String ACTION_START = "com.thundersoft.autosignintool.action.start";
+    public static final String ACTION_START = "com.thundersoft.autosignintool.action.start";
     private boolean isContinue = true;
 
     public AlarmIntentService() {

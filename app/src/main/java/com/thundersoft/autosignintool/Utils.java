@@ -9,6 +9,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -148,4 +151,22 @@ class Utils {
         intent1.setComponent(componentName);
         context.startActivity(intent1);
     }
+
+    // 播放铃声
+    public static void playRing(Context context) throws InterruptedException {
+        AudioManager am = (AudioManager) context
+                .getSystemService(Context.AUDIO_SERVICE);
+        float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volumnCurrent = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float volumnRatio = volumnCurrent / audioMaxVolumn;
+        SoundPool soundPool = new SoundPool.Builder().setMaxStreams(1)
+                .setAudioAttributes(new AudioAttributes.Builder()
+                        .setLegacyStreamType(AudioManager.STREAM_MUSIC).build())
+                .build();
+        int sourceId = soundPool.load(context, R.raw.notification_at, 1);
+        Thread.sleep(1000);
+
+        soundPool.play(sourceId, volumnRatio, volumnRatio, 1, 2, 1);
+    }
+
 }
