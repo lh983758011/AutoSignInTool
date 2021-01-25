@@ -13,7 +13,12 @@
 
     <!-- Sync Preferences -->
     <string name="switch_title">开关</string>
+    <string name="switch_red_packet_title">红包助手开关</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="switch_summary_on">开启</string>
     <string name="switch_summary_off">关闭</string>
+    <string name="switch_red_packet_summary_on">红包助手开启</string>
+    <string name="switch_red_packet_summary_off">红包助手关闭</string>
+
+    <string name="red_packet_description">红包助手</string>
 </resources>

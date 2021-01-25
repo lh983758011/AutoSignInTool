@@ -72,6 +72,15 @@ public class SettingsActivity extends AppCompatActivity {
         startActivity(intent1);
     }
 
+    // 打开微信
+    private void startWechatApp(){
+        Intent intent1 = new Intent("android.intent.action.MAIN");
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName componentName = new ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI");
+        intent1.setComponent(componentName);
+        startActivity(intent1);
+    }
+
     // 打开无障碍设置
     private void openAccessibilitySettings(){
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
@@ -106,6 +115,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
         SwitchPreferenceCompat mSwitchPreference = null;
+        SwitchPreferenceCompat mRedPacketSwitchPreference = null;
         Preference mStatePreference = null;
         Preference mDistancePreference = null;
 
@@ -115,6 +125,9 @@ public class SettingsActivity extends AppCompatActivity {
             super.onStart();
             if (mSwitchPreference != null){
                 mSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isOpen());
+            }
+            if (mRedPacketSwitchPreference != null){
+                mRedPacketSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isRedPacketOpen());
             }
             if (mStatePreference != null){
                 mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
@@ -179,6 +192,13 @@ public class SettingsActivity extends AppCompatActivity {
                 return false;
             });
 
+            // 打开微信
+            Preference launchWechatPre = findPreference("launch_wechat");
+            launchWechatPre.setOnPreferenceClickListener(preference -> {
+                ((SettingsActivity)getActivity()).startWechatApp();
+                return false;
+            });
+
 
             // 开关
             mSwitchPreference = findPreference("switch");
@@ -189,6 +209,20 @@ public class SettingsActivity extends AppCompatActivity {
                     ((SettingsActivity)getActivity()).startLarkApp();
                 }else{
                     ((MyApplication)getActivity().getApplication()).setOpen(false);
+                }
+
+                return true;
+            });
+
+            // 红包助手开关
+            mRedPacketSwitchPreference = findPreference("switch_red_packet");
+            mRedPacketSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                boolean switchState = (boolean) newValue;
+                if (switchState){
+                    ((MyApplication)getActivity().getApplication()).setRedPacketOpen(true);
+                    ((SettingsActivity)getActivity()).startWechatApp();
+                }else{
+                    ((MyApplication)getActivity().getApplication()).setRedPacketOpen(false);
                 }
 
                 return true;
@@ -229,6 +263,7 @@ public class SettingsActivity extends AppCompatActivity {
             ((MyApplication)getActivity().getApplication()).setEnterSignInRange(false);
             ((MyApplication)getActivity().getApplication()).setEnterSignInScreen(false);
             ((MyApplication)getActivity().getApplication()).setSigning(false);
+
         }
     }
 

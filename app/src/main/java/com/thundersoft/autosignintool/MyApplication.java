@@ -19,6 +19,19 @@ public class MyApplication extends Application {
     private boolean isEnterSignInScreen = false;
     // 是否进入打卡范围
     private boolean isEnterSignInRange = false;
+    // 正在打卡状态
+    private boolean isSigning = false;
+    // 打开红包助手开关
+    private boolean isRedPacketOpen = false;
+
+
+    public boolean isRedPacketOpen() {
+        return isRedPacketOpen;
+    }
+
+    public void setRedPacketOpen(boolean redPacketOpen) {
+        isRedPacketOpen = redPacketOpen;
+    }
 
     public boolean isSigning() {
         return isSigning;
@@ -27,9 +40,6 @@ public class MyApplication extends Application {
     public void setSigning(boolean signing) {
         isSigning = signing;
     }
-
-    // 正在打卡状态
-    private boolean isSigning = false;
 
     public boolean isEnterSignInScreen() {
         return isEnterSignInScreen;

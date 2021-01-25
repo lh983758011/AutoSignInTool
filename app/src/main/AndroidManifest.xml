@@ -17,10 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoSignInTool">
         <service
+            android:name=".RedPacketService"
+            android:label="RedPacketService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/redpacket_service_config" />
+        </service>
+        <service
             android:name=".AlarmIntentService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.thundersoft.autosignintool.action.start"/>
+                <action android:name="com.thundersoft.autosignintool.action.start" />
             </intent-filter>
         </service>
 

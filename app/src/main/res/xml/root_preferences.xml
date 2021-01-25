@@ -33,6 +33,11 @@
             />
 
         <Preference
+            app:key="launch_wechat"
+            app:title="打开微信"
+            />
+
+        <Preference
             app:key="play"
             app:title="播放铃声"
             />
@@ -42,6 +47,12 @@
             app:title="@string/switch_title"
             app:summaryOff="@string/switch_summary_off"
             app:summaryOn="@string/switch_summary_on"/>
+
+        <SwitchPreferenceCompat
+            app:key="switch_red_packet"
+            app:title="@string/switch_red_packet_title"
+            app:summaryOff="@string/switch_red_packet_summary_off"
+            app:summaryOn="@string/switch_red_packet_summary_on"/>
 
         <ListPreference
             app:defaultValue="everyday"
