@@ -159,7 +159,7 @@ public class SettingsActivity extends AppCompatActivity {
             Preference locationPreference = findPreference("location");
             locationPreference.setOnPreferenceClickListener(preference -> {
                 String locationStr = Utils.getCurrentLocationStr(getContext());
-                Log.e(TAG, "location:" + locationStr);
+                Utils.log("location:" + locationStr);
                 preference.setSummary(locationStr);
                 return false;
             });
@@ -244,7 +244,7 @@ public class SettingsActivity extends AppCompatActivity {
                     int index = listPreference1.findIndexOfValue((String) newValue);
                     if(index == 0){
                         // 打开定时
-                        Log.e(SettingsActivity.TAG, "打开定时");
+                        Utils.log("打开定时");
                         getActivity().startService(new Intent(getActivity(), AutoService.class));
                     }else if (index == 1){
                         // 关闭定时
@@ -289,9 +289,9 @@ public class SettingsActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 0){
-            Log.e(TAG, "0 result = " + grantResults);
+            Utils.log("0 result = " + grantResults);
         }else if(requestCode == 1) {
-            Log.e(TAG, "1 result = " + grantResults);
+            Utils.log("1 result = " + grantResults);
         }
     }
 }

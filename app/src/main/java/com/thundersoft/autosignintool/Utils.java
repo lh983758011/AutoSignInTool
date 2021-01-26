@@ -54,7 +54,7 @@ class Utils {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-                    Log.e(SettingsActivity.TAG, "location:" + location);
+                    log("location:" + location);
                 }
             });
             return lastKnownLocation;
@@ -93,7 +93,7 @@ class Utils {
         int distance = Integer.parseInt(getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE));
         if (distance <= MIN_DISTANCE)
             return true;
-        Log.e(SettingsActivity.TAG, "未进入范围");
+        log("未进入范围");
         return false;
     }
 
@@ -123,18 +123,18 @@ class Utils {
 
         double tt = Math.acos(t1 + t2 + t3);
         String res = (6366000 * tt) + "";
-        Log.e(SettingsActivity.TAG, "distance = " + res);
+        log("distance = " + res);
         return res.substring(0, res.indexOf("."));
     }
 
 
     public static void exeOrderOnTouchEvent(float X, float Y) {
         try {
-            Log.e(SettingsActivity.TAG, orderStr(X, Y));
+            log(orderStr(X, Y));
             Process ps = Runtime.getRuntime().exec(orderStr(X, Y));
             Thread.sleep(2 * 1000);
         } catch (Exception e) {
-            Log.e(SettingsActivity.TAG, "" + e);
+            log("" + e);
             e.printStackTrace();
         }
     }
@@ -149,7 +149,7 @@ class Utils {
 
     // 打开飞书APP
     public static void startLarkApp(Context context){
-        Log.e(SettingsActivity.TAG, "starting lark app");
+        log("starting lark app");
         Intent intent1 = new Intent("android.intent.action.MAIN");
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ComponentName componentName = new ComponentName("com.ss.android.lark", "com.ss.android.lark.main.app.MainActivity");
@@ -174,4 +174,8 @@ class Utils {
         soundPool.play(sourceId, volumnRatio, volumnRatio, 1, 2, 1);
     }
 
+
+    public static void log(String message){
+        Log.e(SettingsActivity.TAG, message);
+    }
 }

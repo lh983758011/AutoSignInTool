@@ -142,10 +142,10 @@ public class AutoService extends Service {
 
         for (ActivityManager.RunningAppProcessInfo ra : lr) {
             if (ra.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE || ra.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                Log.e(SettingsActivity.TAG, ra.processName);
+                Utils.log(ra.processName);
                 return ra.processName;
             } else {
-                Log.e(SettingsActivity.TAG, "找不到");
+                Utils.log("找不到");
             }
         }
         return "";
@@ -163,7 +163,7 @@ public class AutoService extends Service {
             os.flush();
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(SettingsActivity.TAG, e.getMessage());
+            Utils.log(e.getMessage());
         }
     }
 

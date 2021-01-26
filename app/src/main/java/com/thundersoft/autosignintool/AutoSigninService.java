@@ -35,7 +35,7 @@ public class AutoSigninService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
         try {
-            Log.e(SettingsActivity.TAG, "onAccessibilityEvent");
+            Utils.log("onAccessibilityEvent");
             //拿到根节点
             AccessibilityNodeInfo rootInfo = getRootInActiveWindow();
             if (rootInfo == null)
@@ -45,7 +45,7 @@ public class AutoSigninService extends AccessibilityService {
                 DFS(rootInfo);
             }
         } catch (Exception e) {
-            Log.e(SettingsActivity.TAG, "" + e);
+            Utils.log( "" + e);
         }
     }
 
@@ -59,15 +59,15 @@ public class AutoSigninService extends AccessibilityService {
         }
         if (!((MyApplication)getApplication()).isEnterSignInScreen()) {
             if (!"android.widget.TextView".equals(rootInfo.getClassName())) {
-                Log.e(SettingsActivity.TAG, rootInfo.getClassName().toString());
+                Utils.log( rootInfo.getClassName().toString());
                 for (int i = 0; i < rootInfo.getChildCount(); i++) {
                     DFS(rootInfo.getChild(i));
                 }
             } else {
-                Log.e(SettingsActivity.TAG, "==find TextView==");
+                Utils.log( "==find TextView==");
                 if (rootInfo != null && !TextUtils.isEmpty(rootInfo.getText())) {
                     String text = rootInfo.getText().toString();
-                    Log.e(SettingsActivity.TAG, "==text ==" + text);
+                    Utils.log( "==text ==" + text);
                     if (text.equals("工作台")) {
                         performClick(rootInfo.getParent());
                     } else if (text.equals("集团工作平台")) {
@@ -79,21 +79,21 @@ public class AutoSigninService extends AccessibilityService {
             }
         } else {
             if (!"android.view.View".equals(rootInfo.getClassName())) {
-                Log.e(SettingsActivity.TAG, rootInfo.getClassName().toString());
+                Utils.log( rootInfo.getClassName().toString());
                 for (int i = 0; i < rootInfo.getChildCount(); i++) {
                     DFS(rootInfo.getChild(i));
                 }
             } else {
-                Log.e(SettingsActivity.TAG, "==find View==");
+                Utils.log( "==find View==");
                 if (rootInfo != null && !TextUtils.isEmpty(rootInfo.getText())) {
                     String text = rootInfo.getText().toString();
                     if (text.equals("已进入打卡范围重新定位")) {
-                        Log.e(SettingsActivity.TAG, "==text ==" + text);
+                        Utils.log( "==text ==" + text);
                         //isEnterSignInRange = true;
                         ((MyApplication)getApplication()).setEnterSignInRange(true);
                     }
                     if (text.equals("打卡") && ((MyApplication)getApplication()).isEnterSignInRange()) {
-                        Log.e(SettingsActivity.TAG, "==text ==" + text);
+                        Utils.log( "==text ==" + text);
                         Path path = new Path();
                         Rect boundsInScreen = new Rect();
                         rootInfo.getBoundsInScreen(boundsInScreen);
@@ -103,7 +103,7 @@ public class AutoSigninService extends AccessibilityService {
                             @Override
                             public void onCompleted(GestureDescription gestureDescription) {
                                 super.onCompleted(gestureDescription);
-                                Log.e(SettingsActivity.TAG, "打卡成功");
+                                Utils.log( "打卡成功");
                                 try {
                                     Utils.playRing(getApplicationContext());
                                 } catch (InterruptedException e) {

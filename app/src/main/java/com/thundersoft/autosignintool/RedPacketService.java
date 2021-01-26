@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class RedPacketService extends AccessibilityService {
         if (!((MyApplication)getApplication()).isRedPacketOpen())
             return;
         int eventType = event.getEventType();
+        Utils.log("event = " + event);
         switch (eventType) {
             //通知栏来信息，判断是否含有微信红包字样，是的话跳转
             case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
@@ -53,7 +55,6 @@ public class RedPacketService extends AccessibilityService {
                         if (content.contains("[微信红包]")) {
                             //如果有则打开微信红包页面
                             openWeChatPage(event);
-
                             isOpenRP=false;
                         }
                     }
@@ -67,7 +68,7 @@ public class RedPacketService extends AccessibilityService {
                     //获取当前聊天页面的根布局
                     AccessibilityNodeInfo rootNode = getRootInActiveWindow();
                     //开始找红包
-                    findRedPacket(rootNode);
+                    findRedPacketWithoutDone(rootNode);
                 }
 
                 //判断是否是显示‘开’的那个红包界面
@@ -90,6 +91,25 @@ public class RedPacketService extends AccessibilityService {
                     back();
                 }
                 break;
+            //内容变化的监听
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                if (true) {
+                    //获取当前聊天页面的根布局
+                    AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+                    //开始找红包
+                    findRedPacketWithoutDone(rootNode);
+                    if (isOpenRP) {
+                        try {
+                            Thread.sleep(500);
+                            openRedPacket(rootNode);
+                            Thread.sleep(500);
+                            back();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
         }
 
     }
@@ -107,6 +127,7 @@ public class RedPacketService extends AccessibilityService {
             AccessibilityNodeInfo node = rootNode.getChild(i);
             if ("android.widget.Button".equals(node.getClassName())) {
                 node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
             }
             openRedPacket(node);
         }
@@ -150,11 +171,56 @@ public class RedPacketService extends AccessibilityService {
         }
     }
 
+    private void findRedPacketWithoutDone(AccessibilityNodeInfo rootNode) {
+        if (rootNode != null) {
+            //从最后一行开始找起
+            out:
+            for (int i = rootNode.getChildCount() - 1; i >= 0; i--) {
+                AccessibilityNodeInfo node = rootNode.getChild(i);
+                //如果node为空则跳过该节点
+                if (node == null) {
+                    continue;
+                }
+                CharSequence text = node.getText();
+                if (text != null && (text.toString().equals("微信红包"))) {
+                    AccessibilityNodeInfo parent = node.getParent();
+                    for (int n = parent.getChildCount() - 1; n >= 0; n--){
+                        AccessibilityNodeInfo child = parent.getChild(n);
+                        if (child != null){
+                            if (child.getText() != null && child.getText().toString().equals("已领取")){
+                                Utils.log( "红包已领取");
+                                break out;
+                            }
+                        }
+                    }
+                    //while循环,遍历"领取红包"的各个父布局，直至找到可点击的为止
+                    while (parent != null) {
+                        if (parent.isClickable()) {
+                            //模拟点击
+                            parent.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                            //isOpenRP用于判断该红包是否点击过
+                            isOpenRP = true;
+                            break;
+                        }
+                        parent = parent.getParent();
+                    }
+                }
+                //判断是否已经打开过那个最新的红包了，是的话就跳出for循环，不是的话继续遍历
+                if (isOpenRP) {
+                    break;
+                } else {
+                    findRedPacketWithoutDone(node);
+                }
+
+            }
+        }
+    }
+
     /**
      * 开启红包所在的聊天页面
      */
     private void openWeChatPage(AccessibilityEvent event) {
-        Log.e(SettingsActivity.TAG, "openWeChatPage event :" + event);
+        Utils.log( "openWeChatPage event :" + event);
         if (event.getParcelableData() != null && event.getParcelableData() instanceof Notification) {
             Notification notification = (Notification) event.getParcelableData();
             //打开对应的聊天界面
@@ -172,6 +238,7 @@ public class RedPacketService extends AccessibilityService {
      */
     private void back() {
         mService.performGlobalAction(GLOBAL_ACTION_BACK);
+        isOpenRP = false;
     }
 
 }
