@@ -25,6 +25,7 @@ class Utils {
 
     public static final double COMPANY_LATITUDE = 30.586166;
     public static final double COMPANY_LONGTIUDE = 104.058851;
+    public static final int MIN_DISTANCE = 450; // 单位：m
 
     public static Location getCurrentLocation(Context context) {
 
@@ -90,10 +91,14 @@ class Utils {
      */
     public static boolean isEnterRange(double lat, double lng){
         int distance = Integer.parseInt(getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE));
-        if (distance <= 250)
+        if (distance <= MIN_DISTANCE)
             return true;
         Log.e(SettingsActivity.TAG, "未进入范围");
         return false;
+    }
+
+    public static String getDistance(double lat, double lng){
+        return getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE);
     }
 
     private static final Double PI = Math.PI;

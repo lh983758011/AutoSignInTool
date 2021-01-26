@@ -58,7 +58,10 @@ public class SettingsActivity extends AppCompatActivity {
         if (!isAccessibilitySettingsOn(this,
                 AutoSigninService.class.getName())) {// 判断服务是否开启
             openAccessibilitySettings();
-        } else {
+        } else if (!isAccessibilitySettingsOn(this,
+                RedPacketService.class.getName())) {
+            openAccessibilitySettings();
+        }else{
             Utils.toast(this, "服务已开启");
         }
     }
@@ -131,12 +134,15 @@ public class SettingsActivity extends AppCompatActivity {
             }
             if (mStatePreference != null){
                 mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
-                        + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName()));
+                        + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName())
+                        + "\nRedPacketService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())
+                );
             }
             if (mDistancePreference != null){
                 Location location = Utils.getCurrentLocation(getContext());
                 if (location != null)
-                    mDistancePreference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
+                    mDistancePreference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude())
+                            + " 距离： " + Utils.getDistance(location.getLatitude(), location.getLongitude()) + "米");
                 else
                     mDistancePreference.setSummary("定位失败");
             }
@@ -163,7 +169,8 @@ public class SettingsActivity extends AppCompatActivity {
             mDistancePreference.setOnPreferenceClickListener(preference -> {
                 Location location = Utils.getCurrentLocation(getContext());
                 if (location != null)
-                    preference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude()));
+                    preference.setSummary("进入打卡范围：" + Utils.isEnterRange(location.getLatitude(), location.getLongitude())
+                            + " 距离： " + Utils.getDistance(location.getLatitude(), location.getLongitude()) + "米");
                 else
                     preference.setSummary("定位失败");
                 return false;

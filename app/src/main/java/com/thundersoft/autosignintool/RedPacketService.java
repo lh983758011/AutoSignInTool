@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -17,6 +18,7 @@ public class RedPacketService extends AccessibilityService {
     private String LAUCHER = "com.tencent.mm.ui.LauncherUI";
     private String LUCKEY_MONEY_DETAIL = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyDetailUI";
     private String LUCKEY_MONEY_RECEIVER = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI";
+    private String LUCKEY_MONEY_NOT_HOOK_RECEIVER = "com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyNotHookReceiveUI";
 
     /**
      * 用于判断是否点击过红包了
@@ -75,10 +77,17 @@ public class RedPacketService extends AccessibilityService {
                     openRedPacket(rootNode);
                 }
 
+                //判断是否是显示‘开’的那个红包界面
+                if (LUCKEY_MONEY_NOT_HOOK_RECEIVER.equals(className)) {
+                    AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+                    //开始抢红包
+                    openRedPacket(rootNode);
+                }
+
                 //判断是否是红包领取后的详情界面
                 if(LUCKEY_MONEY_DETAIL.equals(className)){
                     //返回桌面
-                    back2Home();
+                    back();
                 }
                 break;
         }
@@ -116,7 +125,7 @@ public class RedPacketService extends AccessibilityService {
                     continue;
                 }
                 CharSequence text = node.getText();
-                if (text != null && (text.toString().equals("领取红包") || text.toString().equals("微信红包"))) {
+                if (text != null && (text.toString().equals("微信红包"))) {
                     AccessibilityNodeInfo parent = node.getParent();
                     //while循环,遍历"领取红包"的各个父布局，直至找到可点击的为止
                     while (parent != null) {
@@ -145,6 +154,7 @@ public class RedPacketService extends AccessibilityService {
      * 开启红包所在的聊天页面
      */
     private void openWeChatPage(AccessibilityEvent event) {
+        Log.e(SettingsActivity.TAG, "openWeChatPage event :" + event);
         if (event.getParcelableData() != null && event.getParcelableData() instanceof Notification) {
             Notification notification = (Notification) event.getParcelableData();
             //打开对应的聊天界面
@@ -160,8 +170,8 @@ public class RedPacketService extends AccessibilityService {
     /**
      * 返回桌面
      */
-    private void back2Home() {
-        mService.performGlobalAction(GLOBAL_ACTION_HOME);
+    private void back() {
+        mService.performGlobalAction(GLOBAL_ACTION_BACK);
     }
 
 }
