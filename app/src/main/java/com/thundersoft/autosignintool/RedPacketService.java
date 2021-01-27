@@ -3,13 +3,8 @@ package com.thundersoft.autosignintool;
 import android.accessibilityservice.AccessibilityService;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Intent;
 import android.graphics.Rect;
-import android.nfc.Tag;
-import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -46,7 +41,7 @@ public class RedPacketService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (!((MyApplication)getApplication()).isRedPacketOpen())
+        if (!((MyApplication) getApplication()).isRedPacketOpen())
             return;
         int eventType = event.getEventType();
         Utils.log("event = " + event);
@@ -61,7 +56,7 @@ public class RedPacketService extends AccessibilityService {
                         if (content.contains("[微信红包]")) {
                             //如果有则打开微信红包页面
                             openWeChatPage(event);
-                            isOpenRP=false;
+                            isOpenRP = false;
                         }
                     }
                 }
@@ -92,7 +87,7 @@ public class RedPacketService extends AccessibilityService {
                 }
 
                 //判断是否是红包领取后的详情界面
-                if(LUCKEY_MONEY_DETAIL.equals(className)){
+                if (LUCKEY_MONEY_DETAIL.equals(className)) {
                     //返回桌面
                     back();
                 }
@@ -137,7 +132,7 @@ public class RedPacketService extends AccessibilityService {
             return;
         for (int i = 0; i < rootNode.getChildCount(); i++) {
             AccessibilityNodeInfo node = rootNode.getChild(i);
-            if(node == null)
+            if (node == null)
                 continue;
             if ("android.widget.Button".equals(node.getClassName())) {
                 node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
@@ -198,12 +193,12 @@ public class RedPacketService extends AccessibilityService {
                 if (text != null && (text.toString().equals("微信红包"))) {
                     // 1. 判断是否已经被领取
                     AccessibilityNodeInfo parent = node.getParent();
-                    for (int n = parent.getChildCount() - 1; n >= 0; n--){
+                    for (int n = parent.getChildCount() - 1; n >= 0; n--) {
                         AccessibilityNodeInfo child = parent.getChild(n);
-                        if (child != null){
+                        if (child != null) {
                             if (child.getText() != null && (child.getText().toString().equals("已领取")
-                                    || child.getText().toString().equals("已被领完"))){
-                                Utils.log( "红包已领取");
+                                    || child.getText().toString().equals("已被领完"))) {
+                                Utils.log("红包已领取");
                                 break out;
                             }
                         }
@@ -212,7 +207,7 @@ public class RedPacketService extends AccessibilityService {
                     // 2. 判断是自己或者被人发的红包，根据位置判断，左：222 别人，右:305 自己
                     Rect boundsInScreen = new Rect();
                     node.getBoundsInScreen(boundsInScreen);
-                    if (boundsInScreen.left == SELF_X_LEFT_LOCATION){
+                    if (boundsInScreen.left >= SELF_X_LEFT_LOCATION) {
                         break out;
                     }
 
@@ -243,7 +238,7 @@ public class RedPacketService extends AccessibilityService {
      * 开启红包所在的聊天页面
      */
     private void openWeChatPage(AccessibilityEvent event) {
-        Utils.log( "openWeChatPage event :" + event);
+        Utils.log("openWeChatPage event :" + event);
         if (event.getParcelableData() != null && event.getParcelableData() instanceof Notification) {
             Notification notification = (Notification) event.getParcelableData();
             //打开对应的聊天界面
