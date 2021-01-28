@@ -89,8 +89,10 @@ public class Utils {
      */
     public static boolean isEnterRange(double lat, double lng){
         int distance = Integer.parseInt(getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE));
-        if (distance <= MIN_DISTANCE)
+        if (distance <= MIN_DISTANCE) {
+            log("进入范围内");
             return true;
+        }
         log("未进入范围");
         return false;
     }

@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
+import com.thundersoft.autosignintool.services.AlarmIntentService;
 import com.thundersoft.autosignintool.services.AutoService;
 import com.thundersoft.autosignintool.services.AutoSigninService;
 import com.thundersoft.autosignintool.services.RedPacketService;
@@ -238,14 +239,17 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
 
-            // 开关
+            // 自动签卡开关
             mSwitchPreference = findPreference("switch");
             mSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
                     ((MyApplication)getActivity().getApplication()).setOpen(true);
                     if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())) {
-                        ((SettingsActivity) getActivity()).startLarkApp();
+                        //((SettingsActivity) getActivity()).startLarkApp();
+                        Intent intent = new Intent(getContext(), AlarmIntentService.class);
+                        intent.setAction(AlarmIntentService.ACTION_START);
+                        getActivity().startService(intent);
                     }else{
                         ((SettingsActivity) getActivity()).openAccessibilitySettings();
                     }
