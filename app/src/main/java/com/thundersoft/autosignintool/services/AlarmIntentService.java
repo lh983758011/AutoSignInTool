@@ -1,11 +1,12 @@
-package com.thundersoft.autosignintool;
+package com.thundersoft.autosignintool.services;
 
-import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
+
+import com.thundersoft.autosignintool.Utils;
 
 public class AlarmIntentService extends JobIntentService {
 

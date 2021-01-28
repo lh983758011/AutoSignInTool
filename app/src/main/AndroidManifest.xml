@@ -17,7 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AutoSignInTool">
         <service
-            android:name=".RedPacketService"
+            android:name=".services.NotificationService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".services.RedPacketService"
             android:label="RedPacketService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -29,7 +38,7 @@
                 android:resource="@xml/redpacket_service_config" />
         </service>
         <service
-            android:name=".AlarmIntentService"
+            android:name=".services.AlarmIntentService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.thundersoft.autosignintool.action.start" />
@@ -43,11 +52,11 @@
         </receiver>
 
         <service
-            android:name=".AutoService"
+            android:name=".services.AutoService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".AutoSigninService"
+            android:name=".services.AutoSigninService"
             android:enabled="true"
             android:exported="true"
             android:label="AutoSigninService"

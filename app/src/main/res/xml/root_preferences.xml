@@ -28,6 +28,11 @@
             />
 
         <Preference
+            app:key="start_notification"
+            app:title="打开通知设置"
+            />
+
+        <Preference
             app:key="launch"
             app:title="打开飞书"
             />

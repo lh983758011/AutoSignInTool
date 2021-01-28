@@ -1,4 +1,4 @@
-package com.thundersoft.autosignintool;
+package com.thundersoft.autosignintool.services;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.Notification;
@@ -7,6 +7,9 @@ import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.thundersoft.autosignintool.MyApplication;
+import com.thundersoft.autosignintool.Utils;
 
 import java.util.List;
 

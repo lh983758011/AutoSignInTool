@@ -1,16 +1,16 @@
-package com.thundersoft.autosignintool;
+package com.thundersoft.autosignintool.services;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.thundersoft.autosignintool.Utils;
+import com.thundersoft.autosignintool.services.AlarmIntentService;
 
 import java.io.OutputStream;
 import java.util.Calendar;

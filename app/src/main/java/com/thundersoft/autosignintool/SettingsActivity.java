@@ -1,7 +1,6 @@
 package com.thundersoft.autosignintool;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,10 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -21,8 +17,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreference;
 import androidx.preference.SwitchPreferenceCompat;
+
+import com.thundersoft.autosignintool.services.AutoService;
+import com.thundersoft.autosignintool.services.AutoSigninService;
+import com.thundersoft.autosignintool.services.RedPacketService;
 
 import java.util.List;
 
@@ -58,10 +57,12 @@ public class SettingsActivity extends AppCompatActivity {
         if (!isAccessibilitySettingsOn(this,
                 AutoSigninService.class.getName())) {// 判断服务是否开启
             openAccessibilitySettings();
-        } else if (!isAccessibilitySettingsOn(this,
+        }
+        /*else if (!isAccessibilitySettingsOn(this,
                 RedPacketService.class.getName())) {
             openAccessibilitySettings();
-        }else{
+        }*/
+        else{
             Utils.toast(this, "服务已开启");
         }
     }
@@ -82,6 +83,10 @@ public class SettingsActivity extends AppCompatActivity {
         ComponentName componentName = new ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI");
         intent1.setComponent(componentName);
         startActivity(intent1);
+    }
+
+    private void startNotificationListenerSettings(){
+        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
     }
 
     // 打开无障碍设置
@@ -188,6 +193,14 @@ public class SettingsActivity extends AppCompatActivity {
             startPre.setOnPreferenceClickListener(preference -> {
                 // 前往开启辅助服务界面
                 ((SettingsActivity)getActivity()).openAccessibilitySettings();
+                return false;
+            });
+
+            // 打开通知设置
+            Preference startNotificationPre = findPreference("start_notification");
+            startNotificationPre.setOnPreferenceClickListener(preference -> {
+                // 前往开启辅助服务界面
+                ((SettingsActivity)getActivity()).startNotificationListenerSettings();
                 return false;
             });
 

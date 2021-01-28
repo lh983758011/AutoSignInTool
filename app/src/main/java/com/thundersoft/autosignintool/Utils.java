@@ -21,7 +21,7 @@ import androidx.core.app.ActivityCompat;
 import java.util.List;
 import java.util.Set;
 
-class Utils {
+public class Utils {
 
     public static final double COMPANY_LATITUDE = 30.586166;
     public static final double COMPANY_LONGTIUDE = 104.058851;
