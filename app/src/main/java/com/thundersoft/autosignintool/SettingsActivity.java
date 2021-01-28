@@ -3,12 +3,14 @@ package com.thundersoft.autosignintool;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -56,16 +58,32 @@ public class SettingsActivity extends AppCompatActivity {
     private void checkAccessibilityOn(){
         if (!isAccessibilitySettingsOn(this,
                 AutoSigninService.class.getName())) {// 判断服务是否开启
-            openAccessibilitySettings();
+            //openAccessibilitySettings();
+            Utils.toast(this, "自动签卡服务没有开启");
         }
-        /*else if (!isAccessibilitySettingsOn(this,
+        else if (!isAccessibilitySettingsOn(this,
                 RedPacketService.class.getName())) {
-            openAccessibilitySettings();
-        }*/
-        else{
+            //openAccessibilitySettings();
+            Utils.toast(this, "红包助手服务没有开启");
+        } else if (!isNotificationEnabled()){
+            Utils.toast(this, "红包通知服务没有开启");
+        } else{
             Utils.toast(this, "服务已开启");
         }
     }
+
+    // 检查通知服务是否打开
+    private boolean isNotificationEnabled() {
+        ContentResolver contentResolver = getContentResolver();
+        String enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
+
+        if (!TextUtils.isEmpty(enabledListeners)) {
+            return enabledListeners.contains(getPackageName() + "/" + getPackageName() + ".NotificationService");
+        } else {
+            return false;
+        }
+    }
+
 
     // 打开飞书
     private void startLarkApp(){
@@ -139,7 +157,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
             if (mStatePreference != null){
                 mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
-                        + "\nAutoService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoService.class.getName())
+                        + "\nNotificationService is : " + ((SettingsActivity)getActivity()).isNotificationEnabled()
                         + "\nRedPacketService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())
                 );
             }
@@ -226,7 +244,11 @@ public class SettingsActivity extends AppCompatActivity {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
                     ((MyApplication)getActivity().getApplication()).setOpen(true);
-                    ((SettingsActivity)getActivity()).startLarkApp();
+                    if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())) {
+                        ((SettingsActivity) getActivity()).startLarkApp();
+                    }else{
+                        ((SettingsActivity) getActivity()).openAccessibilitySettings();
+                    }
                 }else{
                     ((MyApplication)getActivity().getApplication()).setOpen(false);
                 }
@@ -240,7 +262,11 @@ public class SettingsActivity extends AppCompatActivity {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
                     ((MyApplication)getActivity().getApplication()).setRedPacketOpen(true);
-                    ((SettingsActivity)getActivity()).startWechatApp();
+                    if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())) {
+                        ((SettingsActivity) getActivity()).startWechatApp();
+                    }else{
+                        ((SettingsActivity) getActivity()).openAccessibilitySettings();
+                    }
                 }else{
                     ((MyApplication)getActivity().getApplication()).setRedPacketOpen(false);
                 }
