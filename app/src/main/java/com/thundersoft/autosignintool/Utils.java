@@ -1,7 +1,6 @@
 package com.thundersoft.autosignintool;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import java.util.List;
-import java.util.Set;
 
 public class Utils {
 
@@ -173,7 +171,6 @@ public class Utils {
 
         soundPool.play(sourceId, volumnRatio, volumnRatio, 1, 2, 1);
     }
-
 
     public static void log(String message){
         Log.e(SettingsActivity.TAG, message);

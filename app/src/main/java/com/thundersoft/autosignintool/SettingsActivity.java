@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
         } else if (!isNotificationEnabled()){
             Utils.toast(this, "红包通知服务没有开启");
         } else{
-            Utils.toast(this, "服务已开启");
+            Utils.toast(this, "准备就绪");
         }
     }
 
@@ -78,7 +78,7 @@ public class SettingsActivity extends AppCompatActivity {
         String enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
 
         if (!TextUtils.isEmpty(enabledListeners)) {
-            return enabledListeners.contains(getPackageName() + "/" + getPackageName() + ".NotificationService");
+            return enabledListeners.contains(getPackageName() + "/" + getPackageName() + ".services.NotificationService");
         } else {
             return false;
         }
