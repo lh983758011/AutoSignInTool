@@ -103,7 +103,7 @@ public class RedPacketService extends AccessibilityService {
                     AccessibilityNodeInfo rootNode = getRootInActiveWindow();
                     //开始找红包
                     findRedPacketWithoutDone(rootNode);
-                    if (isOpenRP) {
+                    /*if (isOpenRP) {
                         try {
                             Thread.sleep(500);
                             openRedPacket(rootNode);
@@ -114,7 +114,7 @@ public class RedPacketService extends AccessibilityService {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }
+                    }*/
                     isContentChangeDoing = false;
                 }
                 break;
@@ -139,6 +139,7 @@ public class RedPacketService extends AccessibilityService {
                 continue;
             if ("android.widget.Button".equals(node.getClassName())) {
                 node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                break;
             }
             openRedPacket(node);
         }
@@ -228,6 +229,7 @@ public class RedPacketService extends AccessibilityService {
                 }
                 //判断是否已经打开过那个最新的红包了，是的话就跳出for循环，不是的话继续遍历
                 if (isOpenRP) {
+                    isOpenRP = false;
                     break;
                 } else {
                     findRedPacketWithoutDone(node);
@@ -258,6 +260,11 @@ public class RedPacketService extends AccessibilityService {
      * 返回桌面
      */
     private void back() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         mService.performGlobalAction(GLOBAL_ACTION_BACK);
     }
 

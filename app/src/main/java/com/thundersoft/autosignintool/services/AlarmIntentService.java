@@ -1,5 +1,6 @@
 package com.thundersoft.autosignintool.services;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.Context;
 import android.os.PowerManager;
@@ -7,6 +8,7 @@ import android.os.PowerManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
 
+import com.thundersoft.autosignintool.MyApplication;
 import com.thundersoft.autosignintool.Utils;
 
 public class AlarmIntentService extends JobIntentService {
@@ -15,8 +17,10 @@ public class AlarmIntentService extends JobIntentService {
     private boolean isContinue = true;
     private PowerManager.WakeLock sCpuWakeLock = null;
 
-    public AlarmIntentService() {
+    private static final int JOB_ID = 1000;
 
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, AlarmIntentService.class, JOB_ID, work);
     }
 
     @Override
@@ -35,21 +39,28 @@ public class AlarmIntentService extends JobIntentService {
         isContinue = false;
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     private void handleActionStart() {
-        PowerManager power = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
-        sCpuWakeLock = power.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "WakeLock");
-        while(isContinue){
+        if (sCpuWakeLock == null) {
+            //PowerManager power = (PowerManager) getApplicationContext().getSystemService(POWER_SERVICE);
+            //sCpuWakeLock = power.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |
+            //        PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "WakeLock");
+        }
+        while(isContinue && ((MyApplication)getApplication()).isOpen()){
             boolean isEnterSignInRange = Utils.isEnterRange(getApplicationContext());
+            //isEnterSignInRange = false;
             if (isEnterSignInRange){
                 Utils.log("进入范围内，自动打开飞书");
+                Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
                 Utils.startLarkApp(getApplicationContext());
                 isContinue = false;
-                releaseWakeLock();
+                //releaseWakeLock();
                 stopSelf();
             }else{
                 try {
-                    wakeUpScreen();
+                    Utils.log("未进入范围内");
+                    Utils.toast(getApplicationContext(), "未进入范围内");
+                    //wakeUpScreen();
                     Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -59,19 +70,16 @@ public class AlarmIntentService extends JobIntentService {
     }
 
     private void wakeUpScreen(){
-        if (sCpuWakeLock != null)
+        if (sCpuWakeLock != null) {
+            Utils.log("唤醒屏幕");
             sCpuWakeLock.acquire();
+        }
     }
 
     private void releaseWakeLock(){
-        if (sCpuWakeLock != null)
+        if (sCpuWakeLock != null) {
             sCpuWakeLock.release();
-    }
-
-
-    public static void startActionStart(Context context) {
-        Intent intent = new Intent(context, AlarmIntentService.class);
-        intent.setAction(ACTION_START);
-        context.startService(intent);
+            sCpuWakeLock = null;
+        }
     }
 }

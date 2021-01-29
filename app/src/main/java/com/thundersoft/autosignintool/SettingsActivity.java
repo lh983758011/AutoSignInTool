@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -47,6 +48,7 @@ public class SettingsActivity extends AppCompatActivity {
             //actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); //保持屏幕常亮
         requestPermissions();
     }
 
@@ -157,9 +159,9 @@ public class SettingsActivity extends AppCompatActivity {
                 mRedPacketSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isRedPacketOpen());
             }
             if (mStatePreference != null){
-                mStatePreference.setSummary("AutoSignInService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())
-                        + "\nNotificationService is : " + ((SettingsActivity)getActivity()).isNotificationEnabled()
-                        + "\nRedPacketService is : " + ((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())
+                mStatePreference.setSummary("自动签卡服务 : " + (((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())? "开启": "关闭")
+                        + "\n红包通知服务 : " + (((SettingsActivity)getActivity()).isNotificationEnabled()? "开启": "关闭")
+                        + "\n红包助手服务 : " + (((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())? "开启": "关闭")
                 );
             }
             if (mDistancePreference != null){
@@ -244,12 +246,12 @@ public class SettingsActivity extends AppCompatActivity {
             mSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
-                    ((MyApplication)getActivity().getApplication()).setOpen(true);
                     if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())) {
+                        ((MyApplication)getActivity().getApplication()).setOpen(true);
                         //((SettingsActivity) getActivity()).startLarkApp();
                         Intent intent = new Intent(getContext(), AlarmIntentService.class);
                         intent.setAction(AlarmIntentService.ACTION_START);
-                        getActivity().startService(intent);
+                        AlarmIntentService.enqueueWork(getContext(), intent);
                     }else{
                         ((SettingsActivity) getActivity()).openAccessibilitySettings();
                     }
@@ -265,8 +267,8 @@ public class SettingsActivity extends AppCompatActivity {
             mRedPacketSwitchPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 boolean switchState = (boolean) newValue;
                 if (switchState){
-                    ((MyApplication)getActivity().getApplication()).setRedPacketOpen(true);
                     if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())) {
+                        ((MyApplication)getActivity().getApplication()).setRedPacketOpen(true);
                         ((SettingsActivity) getActivity()).startWechatApp();
                     }else{
                         ((SettingsActivity) getActivity()).openAccessibilitySettings();
