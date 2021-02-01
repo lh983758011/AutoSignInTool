@@ -159,7 +159,8 @@ public class SettingsActivity extends AppCompatActivity {
                 mRedPacketSwitchPreference.setChecked(((MyApplication)getActivity().getApplication()).isRedPacketOpen());
             }
             if (mStatePreference != null){
-                mStatePreference.setSummary("自动签卡服务 : " + (((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())? "开启": "关闭")
+                mStatePreference.setSummary(
+                        "自动签卡服务 : " + (((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())? "开启": "关闭")
                         + "\n红包通知服务 : " + (((SettingsActivity)getActivity()).isNotificationEnabled()? "开启": "关闭")
                         + "\n红包助手服务 : " + (((SettingsActivity)getActivity()).isAccessibilitySettingsOn(getContext(), RedPacketService.class.getName())? "开启": "关闭")
                 );

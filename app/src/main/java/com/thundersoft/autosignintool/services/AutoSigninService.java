@@ -90,12 +90,12 @@ public class AutoSigninService extends AccessibilityService {
                 Utils.log( "==find View==");
                 if (rootInfo != null && !TextUtils.isEmpty(rootInfo.getText())) {
                     String text = rootInfo.getText().toString();
-                    if (text.equals("已进入打卡范围重新定位")) {
+                    if (text.contains("已进入打卡范围")) {
                         Utils.log( "==text ==" + text);
                         //isEnterSignInRange = true;
                         ((MyApplication)getApplication()).setEnterSignInRange(true);
                     }
-                    if (text.equals("打卡") && ((MyApplication)getApplication()).isEnterSignInRange()) {
+                    if (text.startsWith("打卡") && ((MyApplication)getApplication()).isEnterSignInRange()) {
                         Utils.log( "==text ==" + text);
                         Path path = new Path();
                         Rect boundsInScreen = new Rect();
