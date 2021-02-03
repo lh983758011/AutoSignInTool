@@ -67,6 +67,7 @@ public class RedPacketService extends AccessibilityService {
             //界面跳转的监听
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                 String className = event.getClassName().toString();
+                Utils.log("className :" + className);
                 //判断是否是微信聊天界面
                 if (LAUCHER.equals(className)) {
                     //获取当前聊天页面的根布局
@@ -84,6 +85,11 @@ public class RedPacketService extends AccessibilityService {
 
                 //判断是否是显示‘开’的那个红包界面
                 if (LUCKEY_MONEY_NOT_HOOK_RECEIVER.equals(className)) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     AccessibilityNodeInfo rootNode = getRootInActiveWindow();
                     //开始抢红包
                     openRedPacket(rootNode);
@@ -139,7 +145,6 @@ public class RedPacketService extends AccessibilityService {
                 continue;
             if ("android.widget.Button".equals(node.getClassName())) {
                 node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                break;
             }
             openRedPacket(node);
         }
