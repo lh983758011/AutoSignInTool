@@ -7,5 +7,5 @@
     android:canPerformGestures="true"
     android:canRetrieveWindowContent="true"
     android:notificationTimeout="100"
-    android:description="@string/app_name"
+    android:description="@string/auto_signin_description"
     android:packageNames="com.ss.android.lark"/>

@@ -14,12 +14,14 @@ import com.thundersoft.autosignintool.Utils;
 public class AlarmIntentService extends JobIntentService {
 
     public static final String ACTION_START = "com.thundersoft.autosignintool.action.start";
+    private static Context mContext;
     private boolean isContinue = true;
     private PowerManager.WakeLock sCpuWakeLock = null;
 
     private static final int JOB_ID = 1000;
 
     public static void enqueueWork(Context context, Intent work) {
+        mContext = context;
         enqueueWork(context, AlarmIntentService.class, JOB_ID, work);
     }
 
@@ -47,7 +49,7 @@ public class AlarmIntentService extends JobIntentService {
             //        PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "WakeLock");
         }
         while(isContinue && ((MyApplication)getApplication()).isOpen()){
-            boolean isEnterSignInRange = Utils.isEnterRange(getApplicationContext());
+            boolean isEnterSignInRange = Utils.isEnterRange(mContext);
             //isEnterSignInRange = false;
             if (isEnterSignInRange){
                 Utils.log("进入范围内，自动打开飞书");

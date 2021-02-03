@@ -250,9 +250,9 @@ public class SettingsActivity extends AppCompatActivity {
                     if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())) {
                         ((MyApplication)getActivity().getApplication()).setOpen(true);
                         //((SettingsActivity) getActivity()).startLarkApp();
-                        Intent intent = new Intent(getContext(), AlarmIntentService.class);
-                        intent.setAction(AlarmIntentService.ACTION_START);
-                        AlarmIntentService.enqueueWork(getContext(), intent);
+                        //Intent intent = new Intent(getContext(), AlarmIntentService.class);
+                        //intent.setAction(AlarmIntentService.ACTION_START);
+                        //AlarmIntentService.enqueueWork(getContext(), intent);
                     }else{
                         ((SettingsActivity) getActivity()).openAccessibilitySettings();
                     }
@@ -291,10 +291,14 @@ public class SettingsActivity extends AppCompatActivity {
                     if(index == 0){
                         // 打开定时
                         Utils.log("打开定时");
-                        getActivity().startService(new Intent(getActivity(), AutoService.class));
+                        //getActivity().startService(new Intent(getActivity(), AutoService.class));
+                        // 设置早上9:20的闹钟
+                        Utils.setAlarm(getContext(), 9, 20);
                     }else if (index == 1){
                         // 关闭定时
-                        getActivity().stopService(new Intent(getActivity(), AutoService.class));
+                        Utils.log("关闭定时");
+                        //getActivity().stopService(new Intent(getActivity(), AutoService.class));
+                        Utils.cancelAlarm(getContext());
                     }
                 }
                 return true;
@@ -325,9 +329,13 @@ public class SettingsActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 1);
+        }
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
         }
     }
 
@@ -338,6 +346,8 @@ public class SettingsActivity extends AppCompatActivity {
             Utils.log("0 result = " + grantResults);
         }else if(requestCode == 1) {
             Utils.log("1 result = " + grantResults);
+        }else if(requestCode == 2) {
+            Utils.log("2 result = " + grantResults);
         }
     }
 }

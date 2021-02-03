@@ -4,21 +4,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.thundersoft.autosignintool.services.AlarmIntentService;
+
 /**
- * 暂时没用
+ * 接收闹钟广播
  */
 public class AlarmReceiver extends BroadcastReceiver {
     private Context mContext;
+    public static final String ACTION_ALARM = "com.thundersoft.autosignintool.alarmbroadcast";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         this.mContext = context;
         if (intent != null){
-            if (intent.getAction().equals("com.thundersoft.autosignintool.alarmbroadcast")){
-                if(Utils.isEnterRange(context)){
-                    //进入打卡范围
-                    Utils.startLarkApp(context);
-                }
+            if (intent.getAction().equals(ACTION_ALARM)){
+                Utils.log("AlarmReceiver start service");
+                Intent intent1 = new Intent(context, AlarmIntentService.class);
+                intent1.setAction(AlarmIntentService.ACTION_START);
+                AlarmIntentService.enqueueWork(context, intent1);
             }
         }
     }

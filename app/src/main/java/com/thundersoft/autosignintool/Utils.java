@@ -1,6 +1,10 @@
 package com.thundersoft.autosignintool;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +15,14 @@ import android.location.LocationManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class Utils {
@@ -62,7 +68,7 @@ public class Utils {
         return null;
     }
 
-    public static String getCurrentLocationStr(Context context){
+    public static String getCurrentLocationStr(Context context) {
         Location location = getCurrentLocation(context);
         if (location == null)
             return "";
@@ -72,9 +78,9 @@ public class Utils {
     /**
      * 判断是否进入可打卡范围
      */
-    public static boolean isEnterRange(Context context){
+    public static boolean isEnterRange(Context context) {
         Location location = getCurrentLocation(context);
-        if (location != null){
+        if (location != null) {
             return isEnterRange(location.getLatitude(), location.getLongitude());
         }
         return false;
@@ -87,7 +93,7 @@ public class Utils {
      * @param lng
      * @return true 进入范围内
      */
-    public static boolean isEnterRange(double lat, double lng){
+    public static boolean isEnterRange(double lat, double lng) {
         int distance = Integer.parseInt(getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE));
         if (distance <= MIN_DISTANCE) {
             log("进入范围内");
@@ -97,7 +103,7 @@ public class Utils {
         return false;
     }
 
-    public static String getDistance(double lat, double lng){
+    public static String getDistance(double lat, double lng) {
         return getDistance(lat, lng, COMPANY_LATITUDE, COMPANY_LONGTIUDE);
     }
 
@@ -106,13 +112,12 @@ public class Utils {
     private static final Double PK = 180 / PI;
 
     /**
-     * @Description: 根据经纬度计算两点之间的距离
-     *
      * @param lat_a a的经度
      * @param lng_a a的维度
      * @param lat_b b的经度
      * @param lng_b b的维度
      * @return 距离
+     * @Description: 根据经纬度计算两点之间的距离
      */
     public static String getDistance(double lat_a, double lng_a, double lat_b, double lng_b) {
         double t1 =
@@ -139,7 +144,7 @@ public class Utils {
         }
     }
 
-    public static void toast(Context context, String message){
+    public static void toast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
 
@@ -148,7 +153,7 @@ public class Utils {
     }
 
     // 打开飞书APP
-    public static void startLarkApp(Context context){
+    public static void startLarkApp(Context context) {
         log("starting lark app");
         Intent intent1 = new Intent("android.intent.action.MAIN");
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -174,7 +179,45 @@ public class Utils {
         soundPool.play(sourceId, volumnRatio, volumnRatio, 1, 2, 1);
     }
 
-    public static void log(String message){
+    // 日志
+    public static void log(String message) {
         Log.e(SettingsActivity.TAG, message);
     }
+
+
+    private static final int[] days = new int[]{
+            Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY
+    };
+
+    public static void setAlarm(Context context, int hour, int minute) {
+        for (int i : days) {
+            Calendar targetTime = Calendar.getInstance();
+            targetTime.set(Calendar.DAY_OF_WEEK, i);
+            targetTime.set(Calendar.HOUR_OF_DAY, hour);
+            targetTime.set(Calendar.MINUTE, minute);
+            targetTime.set(Calendar.SECOND, 0);
+            targetTime.set(Calendar.MILLISECOND, 0);
+            setAlarm(context, i, targetTime);
+        }
+    }
+
+    private static void setAlarm(Context context, int requestCode, Calendar targetTime) {
+        AlarmManager mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.setAction(AlarmReceiver.ACTION_ALARM);
+        PendingIntent pi = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mAlarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, targetTime.getTimeInMillis(), pi);
+    }
+
+    public static void cancelAlarm(Context context) {
+        AlarmManager mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        for (int i : days) {
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.setAction(AlarmReceiver.ACTION_ALARM);
+            PendingIntent pi = PendingIntent.getBroadcast(context, i, intent, 0);
+            mAlarmManager.cancel(pi);
+            pi.cancel();
+        }
+    }
+
 }

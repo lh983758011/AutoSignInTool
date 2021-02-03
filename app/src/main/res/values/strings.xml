@@ -21,4 +21,5 @@
     <string name="switch_red_packet_summary_off">红包助手关闭</string>
 
     <string name="red_packet_description">红包助手</string>
+    <string name="auto_signin_description">自动签卡助手</string>
 </resources>
