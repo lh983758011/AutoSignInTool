@@ -53,6 +53,7 @@ public class AlarmIntentService extends JobIntentService {
             //isEnterSignInRange = false;
             if (isEnterSignInRange){
                 Utils.log("进入范围内，自动打开飞书");
+                dismissKeyguard();
                 Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
                 Utils.startLarkApp(getApplicationContext());
                 isContinue = false;
@@ -68,6 +69,21 @@ public class AlarmIntentService extends JobIntentService {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void dismissKeyguard(){
+        try {
+            Utils.log("唤醒屏幕");
+            Utils.runShell("input keyevent KEYCODE_WAKEUP");
+            Thread.sleep(200);
+            Utils.runShell("wm dismiss-keyguard");
+            Thread.sleep(200);
+            Utils.runShell("input text 0925");
+            Thread.sleep(200);
+            Utils.log("解锁完毕");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

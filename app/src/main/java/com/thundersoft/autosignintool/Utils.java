@@ -16,11 +16,14 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+
+import com.thundersoft.autosignintool.socket.SocketClient;
 
 import java.util.Calendar;
 import java.util.List;
@@ -218,6 +221,30 @@ public class Utils {
             mAlarmManager.cancel(pi);
             pi.cancel();
         }
+    }
+
+    /**
+     * 执行shell命令
+     *
+     * adb push classes.dex /data/local/tmp
+     * cd /data/local/tmp
+     * app_process -Djava.class.path=/data/local/tmp/classes.dex /system/bin shellService.Main
+     *
+     * @param cmd
+     */
+    public static void runShell(final String cmd){
+        if (TextUtils.isEmpty(cmd)) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new SocketClient(cmd, new SocketClient.onServiceSend() {
+                    @Override
+                    public void getSend(String result) {
+                        log("runShell return :" + result);
+                    }
+                });
+            }
+        }).start();
     }
 
 }
