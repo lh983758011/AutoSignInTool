@@ -100,7 +100,8 @@ public class AutoSigninService extends AccessibilityService {
                         Path path = new Path();
                         Rect boundsInScreen = new Rect();
                         rootInfo.getBoundsInScreen(boundsInScreen);
-                        path.moveTo(boundsInScreen.left, boundsInScreen.top);
+                        Utils.log("bounds :" + boundsInScreen);
+                        path.moveTo(boundsInScreen.left + 5, boundsInScreen.top + 5);
                         final GestureDescription.StrokeDescription sd = new GestureDescription.StrokeDescription(path, 2000, 50);
                         dispatchGesture(new GestureDescription.Builder().addStroke(sd).build(), new AccessibilityService.GestureResultCallback(){
                             @Override
@@ -121,6 +122,12 @@ public class AutoSigninService extends AccessibilityService {
                                 ((MyApplication)getApplication()).setEnterSignInRange(false);
                                 ((MyApplication)getApplication()).setSigning(false);
                                 mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+                                try {
+                                    Thread.sleep(3 * 1000);
+                                    Utils.runShell("input keyevent KEYCODE_SLEEP");
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }, null);
                         ((MyApplication)getApplication()).setSigning(true);

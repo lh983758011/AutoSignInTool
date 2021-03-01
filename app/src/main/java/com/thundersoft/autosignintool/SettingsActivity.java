@@ -250,9 +250,9 @@ public class SettingsActivity extends AppCompatActivity {
                     if(((SettingsActivity) getActivity()).isAccessibilitySettingsOn(getContext(), AutoSigninService.class.getName())) {
                         ((MyApplication)getActivity().getApplication()).setOpen(true);
                         //((SettingsActivity) getActivity()).startLarkApp();
-                        //Intent intent = new Intent(getContext(), AlarmIntentService.class);
-                        //intent.setAction(AlarmIntentService.ACTION_START);
-                        //AlarmIntentService.enqueueWork(getContext(), intent);
+                        Intent intent = new Intent(getContext(), AlarmIntentService.class);
+                        intent.setAction(AlarmIntentService.ACTION_START);
+                        AlarmIntentService.enqueueWork(getContext(), intent);
                     }else{
                         ((SettingsActivity) getActivity()).openAccessibilitySettings();
                     }

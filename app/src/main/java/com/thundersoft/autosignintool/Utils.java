@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -57,19 +58,36 @@ public class Utils {
                 Toast.makeText(context, "位置服务授权失败", Toast.LENGTH_LONG).show();
                 return null;
             }
-            Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    log("location:" + location);
-                }
-            });
+            Location lastKnownLocation = getLastKnownLocation(locationManager);
+//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
+//                @Override
+//                public void onLocationChanged(@NonNull Location location) {
+//                    log("location:" + location);
+//                }
+//            });
             return lastKnownLocation;
         } else {
             Toast.makeText(context, "请检查网络或GPS是否打开", Toast.LENGTH_LONG).show();
         }
         return null;
     }
+
+    private static Location getLastKnownLocation(LocationManager locationManager) {
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            @SuppressLint("MissingPermission")
+            Location location = locationManager.getLastKnownLocation(provider);
+            if (location == null) {
+                continue;
+            }
+            if (bestLocation == null || location.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = location;
+            }
+        }
+        return bestLocation;
+    }
+
 
     public static String getCurrentLocationStr(Context context) {
         Location location = getCurrentLocation(context);

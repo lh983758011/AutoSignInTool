@@ -50,11 +50,16 @@ public class AlarmIntentService extends JobIntentService {
         }
         while(isContinue && ((MyApplication)getApplication()).isOpen()){
             boolean isEnterSignInRange = Utils.isEnterRange(mContext);
+            /*try {
+                Thread.sleep(10 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
             //isEnterSignInRange = false;
             if (isEnterSignInRange){
                 Utils.log("进入范围内，自动打开飞书");
                 dismissKeyguard();
-                Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
+                //Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
                 Utils.startLarkApp(getApplicationContext());
                 isContinue = false;
                 //releaseWakeLock();
@@ -76,11 +81,11 @@ public class AlarmIntentService extends JobIntentService {
         try {
             Utils.log("唤醒屏幕");
             Utils.runShell("input keyevent KEYCODE_WAKEUP");
-            Thread.sleep(200);
+            Thread.sleep(500);
             Utils.runShell("wm dismiss-keyguard");
-            Thread.sleep(200);
+            Thread.sleep(500);
             Utils.runShell("input text 0925");
-            Thread.sleep(200);
+            Thread.sleep(1000);
             Utils.log("解锁完毕");
         } catch (InterruptedException e) {
             e.printStackTrace();
