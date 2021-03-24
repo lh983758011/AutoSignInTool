@@ -59,12 +59,12 @@ public class Utils {
                 return null;
             }
             Location lastKnownLocation = getLastKnownLocation(locationManager);
-//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
-//                @Override
-//                public void onLocationChanged(@NonNull Location location) {
-//                    log("location:" + location);
-//                }
-//            });
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    log("location:" + location);
+                }
+            }, context.getMainLooper());
             return lastKnownLocation;
         } else {
             Toast.makeText(context, "请检查网络或GPS是否打开", Toast.LENGTH_LONG).show();

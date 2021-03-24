@@ -3,6 +3,8 @@ package com.thundersoft.autosignintool.services;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,8 @@ public class AlarmIntentService extends JobIntentService {
         mContext = context;
         enqueueWork(context, AlarmIntentService.class, JOB_ID, work);
     }
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
@@ -59,6 +63,12 @@ public class AlarmIntentService extends JobIntentService {
             if (isEnterSignInRange){
                 Utils.log("进入范围内，自动打开飞书");
                 dismissKeyguard();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
+                    }
+                });
                 //Utils.toast(getApplicationContext(), "进入范围内，自动打开飞书");
                 Utils.startLarkApp(getApplicationContext());
                 isContinue = false;
@@ -67,7 +77,13 @@ public class AlarmIntentService extends JobIntentService {
             }else{
                 try {
                     Utils.log("未进入范围内");
-                    Utils.toast(getApplicationContext(), "未进入范围内");
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utils.toast(getApplicationContext(), "未进入范围内");
+                        }
+                    });
+                    //Utils.toast(getApplicationContext(), "未进入范围内");
                     //wakeUpScreen();
                     Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
