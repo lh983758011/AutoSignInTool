@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.WindowManager;
@@ -23,7 +25,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
 
 import com.thundersoft.autosignintool.services.AlarmIntentService;
-import com.thundersoft.autosignintool.services.AutoService;
 import com.thundersoft.autosignintool.services.AutoSigninService;
 import com.thundersoft.autosignintool.services.RedPacketService;
 
@@ -148,6 +149,19 @@ public class SettingsActivity extends AppCompatActivity {
         Preference mStatePreference = null;
         Preference mDistancePreference = null;
 
+        private Handler mHandler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(@NonNull Message message) {
+                switch (message.what){
+                    case 0:
+                        Utils.toast(getActivity(), (String) message.obj);
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
 
         @Override
         public void onStart() {
@@ -207,6 +221,19 @@ public class SettingsActivity extends AppCompatActivity {
             Preference resetPreference = findPreference("reset");
             resetPreference.setOnPreferenceClickListener(preference -> {
                 reset();
+                return false;
+            });
+
+            // 测试Shell
+            Preference testPre = findPreference("test");
+            testPre.setOnPreferenceClickListener(preference -> {
+                Utils.runShell("ps -A | grep server", new Utils.ShellCallback() {
+                    @Override
+                    public void onCallback(String result) {
+                        Message message = mHandler.obtainMessage(0, result);
+                        mHandler.sendMessage(message);
+                    }
+                });
                 return false;
             });
 

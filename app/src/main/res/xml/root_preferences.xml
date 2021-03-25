@@ -47,6 +47,11 @@
             app:title="播放铃声"
             />
 
+        <Preference
+            app:key="test"
+            app:title="测试Shell"
+            />
+
         <SwitchPreferenceCompat
             app:key="switch"
             app:title="@string/switch_title"

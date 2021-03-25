@@ -265,4 +265,24 @@ public class Utils {
         }).start();
     }
 
+    public interface ShellCallback{
+        void onCallback(String result);
+    }
+
+    public static void runShell(final String cmd, ShellCallback callback){
+        if (TextUtils.isEmpty(cmd)) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new SocketClient(cmd, new SocketClient.onServiceSend() {
+                    @Override
+                    public void getSend(String result) {
+                        log("runShell return :" + result);
+                        callback.onCallback(result);
+                    }
+                });
+            }
+        }).start();
+    }
+
 }
